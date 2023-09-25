@@ -44,6 +44,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,10 +62,7 @@ import org.fisco.bcos.sdk.utils.Numeric;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -77,6 +76,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Slf4j
 @Service
+@Data
 public class KeyStoreService {
 
     @Autowired
@@ -93,6 +93,11 @@ public class KeyStoreService {
     private final static String TEMP_EXPORT_KEYSTORE_PATH = "exportedKey";
     private final static String PEM_FILE_FORMAT = ".pem";
     private final static String P12_FILE_FORMAT = ".p12";
+
+    // sa-token
+    private String tokenKey;
+
+    private String tokenValue;
 
 
     /**
@@ -233,6 +238,11 @@ public class KeyStoreService {
             String url = String.format(Constants.WEBASE_SIGN_URI, constants.getKeyServer());
             log.info("getSignData url:{}", url);
             HttpHeaders headers = CommonUtils.buildHeaders();
+
+            // 增加sa-token信息
+            if (!StringUtils.isEmpty(this.tokenKey) && !StringUtils.isEmpty(this.tokenValue)) {
+                headers.add(this.tokenKey, this.tokenValue);
+            }
             HttpEntity<String> formEntity =
                     new HttpEntity<String>(JsonUtils.toJSONString(params), headers);
             BaseResponse response =
@@ -276,6 +286,10 @@ public class KeyStoreService {
             String url = String.format(Constants.WEBASE_SIGN_URI, constants.getKeyServer());
             log.info("getSignData url:{}", url);
             HttpHeaders headers = CommonUtils.buildHeaders();
+            // 增加sa-token信息
+            if (!StringUtils.isEmpty(this.tokenKey) && !StringUtils.isEmpty(this.tokenValue)) {
+                headers.add(this.tokenKey, this.tokenValue);
+            }
             HttpEntity<String> formEntity =
                     new HttpEntity<String>(JsonUtils.toJSONString(params), headers);
             BaseResponse response =
@@ -595,7 +609,15 @@ public class KeyStoreService {
     private <T> T restTemplateExchange(String url, HttpMethod method, Object param, Class<T> clazz) {
         try{
             log.info("restTemplateExchange url:{}, param:{}", url, param);
-            HttpEntity entity = CommonUtils.buildHttpEntity(param);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+            // 增加sa-token信息
+            if (!StringUtils.isEmpty(this.tokenKey) && !StringUtils.isEmpty(this.tokenValue)) {
+                headers.add(this.tokenKey, this.tokenValue);
+            }
+
+            HttpEntity entity = CommonUtils.buildHttpEntity(headers, param);
+
             ResponseEntity<T> response = restTemplate.exchange(url, method, entity, clazz);
             return response.getBody();
         } catch (ResourceAccessException ex) {
