@@ -76,7 +76,7 @@ public class SyncEventLogCallback implements EventCallback {
                 finalList.addAll(decodedList);
             }
             try {
-                Thread.sleep(10);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 logger.error("sleep 100ms interrupted:[]", e);
             }
