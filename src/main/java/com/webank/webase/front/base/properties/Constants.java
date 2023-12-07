@@ -51,13 +51,13 @@ public class Constants {
     public static final String FILE_ADDRESS = ".address";
     public static final String MGR_PRIVATE_KEY_URI =
             "http://%s/WeBASE-Node-Manager/user/privateKey/%s";
-    public static final String WEBASE_SIGN_URI = "http://%s/sign/sign";
+    public static final String WEBASE_SIGN_URI = "%s/sign";
     public static final String WEBASE_SIGN_USER_URI =
-            "http://%s/sign/user/newUser?encryptType=%s&signUserId=%s&appId=%s&returnPrivateKey=%s";
+            "%s/user/newUser?encryptType=%s&signUserId=%s&appId=%s&returnPrivateKey=%s";
     public static final String WEBASE_SIGN_USER_INFO_URI =
-            "http://%s/sign/user/%s/userInfo?returnPrivateKey=%s";
+            "%s/user/%s/userInfo?returnPrivateKey=%s";
     public static final String WEBASE_SIGN_VERSION_URI =
-        "http://%s/sign/version";
+        "%s/version";
     public static final String ACCOUNT1_PATH = "node.key";
     public static final String OPERATE_GROUP_START = "start";
     public static final String OPERATE_GROUP_STOP = "stop";
@@ -72,7 +72,7 @@ public class Constants {
 
     public static String version;
     public static String chainId;
-    private String keyServer = "127.0.0.1:8080";
+    private String keyServer = "http://127.0.0.1:80/sign";
     private int transMaxWait = 30;
     private String monitorDisk = "/";
     private boolean monitorEnabled = true;
